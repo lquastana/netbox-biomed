@@ -1,0 +1,228 @@
+{% extends 'base/layout.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Biomedical cartography" %}{% endblock %}
+
+{% block content %}
+<style>
+  .bio-toolbar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; margin-bottom: 1rem; }
+  .bio-legend { display: flex; gap: .9rem; flex-wrap: wrap; font-size: .75rem; margin: .4rem 0 .8rem; align-items: center; }
+  .bio-legend .edge::before { content: ''; display: inline-block; width: .8rem; height: .3rem; border-radius: 2px; margin-right: .3rem; background: var(--c); vertical-align: 2px; }
+  .bio-legend .shape svg { vertical-align: -5px; margin-right: .25rem; }
+
+  .bio-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .7rem; margin-bottom: 1.2rem; }
+  .bio-tile {
+    border: 1px solid var(--tblr-border-color); border-radius: .6rem;
+    background: var(--tblr-bg-surface); padding: .7rem .85rem;
+    border-top: 4px solid var(--tile-c, #9e9e9e);
+    text-decoration: none; color: inherit; display: block;
+  }
+  .bio-tile:hover { box-shadow: 0 1px 8px rgba(0,0,0,.14); color: inherit; }
+  .bio-tile .t { font-weight: 600; font-size: .85rem; line-height: 1.2; margin-bottom: .15rem; }
+  .bio-tile .s { font-size: .72rem; color: var(--tblr-secondary, var(--tblr-muted)); margin-bottom: .4rem; }
+  .bio-tile .badges { display: flex; gap: .35rem; flex-wrap: wrap; }
+
+  .bio-diagram { overflow-x: auto; }
+
+  .bio-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: .8rem; align-items: start; }
+  .bio-card { border: 1px solid var(--tblr-border-color); border-radius: .6rem; background: var(--tblr-bg-surface); border-top: 4px solid var(--card-c, #9e9e9e); }
+  .bio-card-header { padding: .55rem .8rem; border-bottom: 1px solid var(--tblr-border-color); display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+  .bio-card-header .t { font-weight: 700; font-size: .85rem; }
+  .bio-card-header .t a { color: inherit; text-decoration: none; }
+  .bio-card-header .s { font-size: .7rem; color: var(--tblr-secondary, var(--tblr-muted)); white-space: nowrap; }
+  .bio-card-body { padding: .45rem .55rem; display: flex; flex-direction: column; gap: .15rem; }
+  .bio-chip { display: flex; align-items: center; gap: .4rem; padding: .18rem .35rem; border-radius: .4rem; text-decoration: none; color: inherit; font-size: .78rem; }
+  .bio-chip:hover { background: var(--tblr-active-bg, rgba(98,105,118,.06)); color: inherit; }
+  .bio-chip svg { flex: 0 0 auto; }
+  .bio-chip .n { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bio-chip .dots { display: flex; gap: 3px; flex: 0 0 auto; }
+  .bio-chip .dots i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .bio-node { fill: var(--tblr-bg-surface, #fff); stroke: #94a3b8; }
+  .bio-node-label { font-size: 11.5px; font-weight: 600; fill: currentColor; }
+  .bio-group-label { font-size: 10.5px; font-weight: 700; fill: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+  .bio-edge { opacity: .65; }
+  .bio-edge:hover { opacity: 1; stroke-width: 6; }
+</style>
+
+<div class="bio-toolbar">
+  <div class="me-auto">
+    <h1 class="mb-0">{% trans "Biomedical cartography" %}</h1>
+    <div class="text-muted">{% trans "Technical platforms, equipment and flows colored by flow type" %}</div>
+  </div>
+  <div class="btn-group" role="group">
+    <a href="?view=flux{% if base_qs %}&{{ base_qs }}{% endif %}"
+       class="btn btn-sm {% if mode == 'flux' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      {% trans "Flow view" %}
+    </a>
+    <a href="?view=plateaux{% if base_qs %}&{{ base_qs }}{% endif %}"
+       class="btn btn-sm {% if mode == 'plateaux' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+      {% trans "Platform view" %}
+    </a>
+  </div>
+  <form method="get" class="d-flex flex-wrap gap-2 align-items-end">
+    <input type="hidden" name="view" value="{{ mode }}">
+    <div>
+      <label class="form-label mb-1">{% trans "Establishment" %}</label>
+      <select name="site_id" class="form-select form-select-sm">
+        <option value="">{% trans "All" %}</option>
+        {% for site in sites_choices %}
+          <option value="{{ site.pk }}" {% if filter_site_id == site.pk|stringformat:'s' %}selected{% endif %}>{{ site.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label mb-1">{% trans "Technical platform" %}</label>
+      <select name="plateau_id" class="form-select form-select-sm">
+        <option value="">{% trans "All" %}</option>
+        {% for plateau in plateaux_choices %}
+          <option value="{{ plateau.pk }}" {% if filter_plateau_id == plateau.pk|stringformat:'s' %}selected{% endif %}>{{ plateau.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label mb-1">{% trans "Role" %}</label>
+      <select name="role" class="form-select form-select-sm">
+        <option value="">{% trans "All" %}</option>
+        {% for choice in role_choices %}
+          <option value="{{ choice.0 }}" {% if filter_role == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label mb-1">{% trans "Protocol" %}</label>
+      <select name="protocol" class="form-select form-select-sm">
+        <option value="">{% trans "All" %}</option>
+        {% for p in protocols %}
+          <option value="{{ p }}" {% if filter_protocol == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label mb-1">{% trans "Flow type" %}</label>
+      <select name="family" class="form-select form-select-sm">
+        <option value="">{% trans "All" %}</option>
+        {% for fam in legend_families %}
+          <option value="{{ fam.key }}" {% if filter_family == fam.key %}selected{% endif %}>{{ fam.label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label mb-1">{% trans "Search" %}</label>
+      <input type="text" name="q" value="{{ filter_q }}" class="form-control form-control-sm" placeholder="{% trans 'Equipment, message…' %}">
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary">{% trans "Filter" %}</button>
+  </form>
+</div>
+
+{% if mode == 'plateaux' %}
+<div class="bio-cards mt-2">
+  {% for card in cards %}
+    <div class="bio-card" style="--card-c: {{ card.color }};">
+      <div class="bio-card-header">
+        <span class="t">
+          {% if card.plateau %}
+            <a href="{{ card.plateau.get_absolute_url }}">{{ card.plateau.name }}</a>
+          {% else %}
+            {% trans "No platform" %}
+          {% endif %}
+        </span>
+        <span class="s">
+          {% if card.site %}{{ card.site.name }} · {% endif %}
+          {{ card.dm_count }} {% trans "devices" %} / {{ card.count }} {% trans "equip." %}
+        </span>
+      </div>
+      <div class="bio-card-body">
+        {% for chip in card.equipments %}
+          <a class="bio-chip" href="/plugins/biomed/equipements/{{ chip.pk }}/" title="{{ chip.label }}">
+            <svg width="32" height="17" viewBox="0 0 32 17" xmlns="http://www.w3.org/2000/svg">
+              <path d="{{ chip.body }}" fill="{{ chip.color }}" fill-opacity="0.14" stroke="{{ chip.color }}" stroke-width="1.2"></path>
+              {% if chip.body_inner %}<path d="{{ chip.body_inner }}" fill="none" stroke="{{ chip.color }}" stroke-width="0.8"></path>{% endif %}
+              <g transform="translate(16, 8.5) scale(0.85)">
+                <path d="{{ chip.icon }}" fill="none" stroke="{{ chip.color }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+            <span class="n">{{ chip.display }}</span>
+            <span class="dots">
+              {% for dot in chip.dots %}<i style="background: {{ dot.color }};" title="{{ dot.label }}"></i>{% endfor %}
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="text-muted">{% trans "No technical platform" %}</div>
+  {% endfor %}
+</div>
+{% else %}
+<h2 class="h4">{% trans "Technical platforms" %}</h2>
+<div class="bio-tiles">
+  {% for tile in tiles %}
+    <a class="bio-tile" style="--tile-c: {{ tile.color }};" href="{{ tile.plateau.get_absolute_url }}">
+      <div class="t">{{ tile.plateau.name }}</div>
+      <div class="s">{{ tile.plateau.site.name }} · {{ tile.plateau.get_category_display }}</div>
+      <div class="badges">
+        <span class="badge text-bg-blue">{{ tile.equipment_count }} {% trans "equip." %}</span>
+        <span class="badge text-bg-green">{{ tile.dm_count }} {% trans "devices" %}</span>
+        {% if tile.flow_count %}
+          <span class="badge text-bg-purple">{{ tile.flow_count }} {% trans "flows" %}</span>
+        {% endif %}
+      </div>
+    </a>
+  {% empty %}
+    <div class="text-muted">{% trans "No technical platform" %}</div>
+  {% endfor %}
+</div>
+
+<h2 class="h4 d-flex justify-content-between align-items-baseline">
+  <span>{% trans "Flow map" %}</span>
+  <span class="text-muted" style="font-size:.8rem;">{{ flow_count }} {% trans "flows" %}</span>
+</h2>
+<div class="bio-legend">
+  <strong style="font-size:.72rem;">{% trans "Flow types" %} :</strong>
+  {% for fam in legend_families %}
+    <span class="edge" style="--c:{{ fam.color }};">{{ fam.label }}</span>
+  {% endfor %}
+</div>
+<div class="bio-legend">
+  <strong style="font-size:.72rem;">{% trans "Roles" %} :</strong>
+  {% for item in legend_roles %}
+    <span class="shape">
+      <svg width="42" height="20" viewBox="0 0 42 20" xmlns="http://www.w3.org/2000/svg">
+        <path d="{{ item.body }}" fill="{{ item.color }}" fill-opacity="0.14" stroke="{{ item.color }}" stroke-width="1.4"></path>
+        {% if item.body_inner %}<path d="{{ item.body_inner }}" fill="none" stroke="{{ item.color }}" stroke-width="0.9"></path>{% endif %}
+        <g transform="translate(21, 10)">
+          <path d="{{ item.icon }}" fill="none" stroke="{{ item.color }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+      </svg>{{ item.label }}
+    </span>
+  {% endfor %}
+</div>
+
+{% if svg %}
+  <div class="card mb-3">
+    <div class="card-body bio-diagram">
+      <svg viewBox="0 0 {{ svg.width }} {{ svg.height }}" width="{{ svg.width }}" height="{{ svg.height }}" xmlns="http://www.w3.org/2000/svg">
+        {% for edge in svg.edges %}
+          <path class="bio-edge"
+                d="M {{ edge.x1 }} {{ edge.y1 }} C {{ edge.cx }} {{ edge.y1 }}, {{ edge.cx }} {{ edge.y2 }}, {{ edge.x2 }} {{ edge.y2 }}"
+                stroke="{{ edge.color }}" stroke-width="{{ edge.width }}" fill="none">
+            <title>{{ edge.title }}</title>
+          </path>
+        {% endfor %}
+        {% for label in svg.group_labels %}
+          <text class="bio-group-label" x="10" y="{{ label.y }}">{{ label.label }}</text>
+        {% endfor %}
+        {% for node in svg.left_nodes %}
+          {% include 'netbox_biomed/inc/carto_node.html' %}
+        {% endfor %}
+        {% for node in svg.right_nodes %}
+          {% include 'netbox_biomed/inc/carto_node.html' %}
+        {% endfor %}
+      </svg>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">{% trans "No flow matches these criteria." %}</div>
+{% endif %}
+{% endif %}
+{% endblock %}

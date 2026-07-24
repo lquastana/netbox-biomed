@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netbox-biomed"
+version = "0.4.1"
+description = "Cartographie des équipements biomédicaux connectés dans NetBox : plateaux techniques, équipements, flux et posture cyber"
+readme = "README.md"
+authors = [{ name = "Laurent Quastana" }]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+classifiers = [
+    "Framework :: Django",
+    "Programming Language :: Python :: 3",
+]
+
+[tool.setuptools.packages.find]
+include = ["netbox_biomed*"]
+
+[tool.setuptools.package-data]
+netbox_biomed = ["templates/**/*.html", "locale/*/LC_MESSAGES/*.po", "locale/*/LC_MESSAGES/*.mo"]

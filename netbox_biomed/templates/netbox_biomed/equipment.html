@@ -1,0 +1,209 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Equipment" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Name" %}</th>
+            <td>{{ object.name }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Role" %}</th>
+            <td>{% badge object.get_role_display bg_color=object.get_role_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Status" %}</th>
+            <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Criticality" %}</th>
+            <td>{% badge object.get_criticality_display bg_color=object.get_criticality_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Category" %}</th>
+            <td>{% badge object.get_category_display bg_color=object.get_category_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Device class" %}</th>
+            <td>{{ object.get_device_class_display|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Establishment" %}</th>
+            <td>{{ object.site|linkify }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Technical platform" %}</th>
+            <td>{{ object.plateau|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Location (room)" %}</th>
+            <td>{{ object.location|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Care unit" %}</th>
+            <td>{{ object.care_unit|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Description" %}</th>
+            <td>{{ object.description|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Hardware / fleet" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Manufacturer" %}</th>
+            <td>{{ object.manufacturer|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Model" %}</th>
+            <td>{{ object.model|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Serial number" %}</th>
+            <td>{{ object.serial|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "CMMS number" %}</th>
+            <td>{{ object.gmao_id|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Commissioning date" %}</th>
+            <td>{{ object.commissioning_date|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Owner" %}</th>
+            <td>{{ object.owner|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Applications fed" %}</h2>
+        <table class="table table-hover attr-table">
+          {% for app in object.applications.all %}
+            <tr><td>{{ app|linkify }}</td></tr>
+          {% empty %}
+            <tr><td class="text-muted">{% trans "None" %}</td></tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Network" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Primary IP" %}</th>
+            <td>{{ object.primary_ip|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "MAC address" %}</th>
+            <td>{{ object.mac_address|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Hostname" %}</th>
+            <td>{{ object.hostname|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "AE Title" %}</th>
+            <td>{{ object.ae_title|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Listening ports" %}</th>
+            <td>{{ object.listen_ports|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "VLAN" %}</th>
+            <td>{{ object.vlan|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Connection mode" %}</th>
+            <td>{% badge object.get_connection_mode_display bg_color=object.get_connection_mode_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Wi-Fi SSID" %}</th>
+            <td>{{ object.ssid|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "DCIM device" %}</th>
+            <td>{{ object.dcim_device|linkify|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Cyber posture" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Network exposure" %}</th>
+            <td>{% badge object.get_network_exposure_display bg_color=object.get_network_exposure_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Operating system" %}</th>
+            <td>{{ object.os|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "End of support" %}</th>
+            <td>
+              {{ object.end_of_support|placeholder }}
+              {% if object.os_obsolete %}
+                <span class="badge text-bg-red">{% trans "Out of support" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Antivirus / EDR" %}</th>
+            <td>{{ object.edr|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "AV/EDR exclusions" %}</th>
+            <td>{{ object.edr_exclusions|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Vendor account" %}</th>
+            <td>{{ object.vendor_account|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Credentials vault reference" %}</th>
+            <td>{{ object.vault_ref|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Vendor remote maintenance" %}</th>
+            <td>{% checkmark object.remote_maintenance %} {{ object.remote_maintenance_mode }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Unencrypted flows" %}</th>
+            <td>
+              {% if object.unencrypted_flow_count %}
+                <span class="badge text-bg-red">{{ object.unencrypted_flow_count }}</span>
+              {% else %}
+                <span class="badge text-bg-green">0</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-12">
+      <div class="card">
+        <h2 class="card-header">{% trans "Outgoing flows" %} ({{ flows_out_count }})</h2>
+        {% render_table flows_out_table %}
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Incoming flows" %} ({{ flows_in_count }})</h2>
+        {% render_table flows_in_table %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

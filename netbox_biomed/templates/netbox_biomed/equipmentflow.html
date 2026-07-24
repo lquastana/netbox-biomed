@@ -1,0 +1,107 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Flow" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Name" %}</th>
+            <td>{{ object.name|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Source" %}</th>
+            <td>{{ object.source|linkify }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Target" %}</th>
+            <td>{{ object.target|linkify }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Protocol" %}</th>
+            <td>{{ object.protocol|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Message type" %}</th>
+            <td>{{ object.message_type|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Port" %}</th>
+            <td>{{ object.port|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Encrypted" %}</th>
+            <td>
+              {% if object.encrypted is None %}
+                <span class="badge text-bg-gray">{% trans "Unknown" %}</span>
+              {% elif object.encrypted %}
+                <span class="badge text-bg-green">{% trans "Yes" %}</span>
+              {% else %}
+                <span class="badge text-bg-red">{% trans "No" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Status" %}</th>
+            <td>{% badge object.get_status_display bg_color=object.get_status_color %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Description" %}</th>
+            <td>{{ object.description|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Endpoints" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "EAI" %}</th>
+            <td>{{ object.eai|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Source endpoint" %}</th>
+            <td>{{ object.source_endpoint|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "EAI endpoint" %}</th>
+            <td>{{ object.eai_endpoint|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Target endpoint" %}</th>
+            <td>{{ object.target_endpoint|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Operations" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Monitoring sensor" %}</th>
+            <td>
+              {% if object.prtg_sensor %}
+                <a href="{{ object.prtg_sensor }}" target="_blank">{{ object.prtg_sensor }}</a>
+              {% else %}
+                <span class="badge text-bg-orange">{% trans "Not monitored" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Recovery procedure" %}</th>
+            <td>{% checkmark object.recovery_procedure %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Vendor contact" %}</th>
+            <td>{{ object.vendor_contact|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+      {% include 'inc/panels/tags.html' %}
+    </div>
+  </div>
+{% endblock %}

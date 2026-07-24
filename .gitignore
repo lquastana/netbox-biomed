@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Données du parc — NE JAMAIS versionner (IP, comptes, inventaire réel)
+tools/mercator_biomed.json
+tools/rapport_qualite.md
+tools/data_flows.txt
+tools/requalify_rules.json
+
+# Archives de déploiement
+*.tgz

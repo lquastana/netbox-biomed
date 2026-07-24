@@ -1,0 +1,9 @@
+[
+  [".", "^(Imprimante|Graveur)", "", "Impression"],
+  ["^Middleware labo", "^AUT", "POCT1-A", "Pilotage automates"],
+  ["^(CT|IRM|Mammo|Echo)", "(PACS|Console)", "DICOM", "Images"],
+  ["^RIS", "^(CT|IRM|Mammo|Echo)", "DICOM", "Worklist"],
+  ["^Centrale monitorage", "^Moniteur", "", "Constantes / monitorage"],
+  [".", "(VPN|Suivi technique)", "", "Télémaintenance"],
+  [".", "Serveur dosimétrie", "DICOM", "Dosimétrie"]
+]

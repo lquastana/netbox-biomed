@@ -1,0 +1,703 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: netbox-biomed 0.1.0\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ── Rôles ──────────────────────────────────────────────────────────────────
+msgid "Medical device"
+msgstr "Dispositif médical"
+
+msgid "Server / VM"
+msgstr "Serveur / VM"
+
+msgid "Workstation / console"
+msgstr "Poste de travail / console"
+
+msgid "Printer / burner"
+msgstr "Imprimante / graveur"
+
+msgid "Gateway / middleware"
+msgstr "Passerelle / middleware"
+
+msgid "Software interface"
+msgstr "Interface logicielle"
+
+msgid "Network equipment"
+msgstr "Équipement réseau"
+
+msgid "Remote access (VPN)"
+msgstr "Accès distant (VPN)"
+
+msgid "Mobile / tablet"
+msgstr "Mobile / tablette"
+
+msgid "Other"
+msgstr "Autre"
+
+# ── Catégories ─────────────────────────────────────────────────────────────
+msgid "Imaging"
+msgstr "Imagerie"
+
+msgid "Laboratory"
+msgstr "Biologie"
+
+msgid "Point-of-care testing"
+msgstr "Biologie délocalisée"
+
+msgid "Patient monitoring"
+msgstr "Monitorage patient"
+
+msgid "Intensive care"
+msgstr "Réanimation"
+
+msgid "Operating room"
+msgstr "Bloc opératoire"
+
+msgid "Obstetrics"
+msgstr "Gynécologie-obstétrique"
+
+msgid "Dialysis"
+msgstr "Dialyse"
+
+msgid "Physiotherapy"
+msgstr "Kinésithérapie"
+
+msgid "Pharmacy"
+msgstr "Pharmacie"
+
+msgid "Sterilization"
+msgstr "Stérilisation"
+
+msgid "Artificial intelligence"
+msgstr "Intelligence artificielle"
+
+# ── Statuts ────────────────────────────────────────────────────────────────
+msgid "In service"
+msgstr "En service"
+
+msgid "Under maintenance"
+msgstr "En maintenance"
+
+msgid "Out of service"
+msgstr "Hors service"
+
+msgid "Decommissioned"
+msgstr "Réformé"
+
+msgid "Project"
+msgstr "Projet"
+
+# ── Classes DM ─────────────────────────────────────────────────────────────
+msgid "Class I (MDR)"
+msgstr "Classe I (RDM)"
+
+msgid "Class IIa (MDR)"
+msgstr "Classe IIa (RDM)"
+
+msgid "Class IIb (MDR)"
+msgstr "Classe IIb (RDM)"
+
+msgid "Class III (MDR)"
+msgstr "Classe III (RDM)"
+
+msgid "Class A (IVDR)"
+msgstr "Classe A (RDIV)"
+
+msgid "Class B (IVDR)"
+msgstr "Classe B (RDIV)"
+
+msgid "Class C (IVDR)"
+msgstr "Classe C (RDIV)"
+
+msgid "Class D (IVDR)"
+msgstr "Classe D (RDIV)"
+
+# ── Criticité ──────────────────────────────────────────────────────────────
+msgid "Vital"
+msgstr "Vital"
+
+msgid "Important"
+msgstr "Important"
+
+msgid "Standard"
+msgstr "Standard"
+
+# ── Exposition ─────────────────────────────────────────────────────────────
+msgid "Isolated (closed network)"
+msgstr "Isolé (réseau fermé)"
+
+msgid "Segmented (dedicated VLAN)"
+msgstr "Segmenté (VLAN dédié)"
+
+msgid "Flat network"
+msgstr "Réseau à plat"
+
+msgid "Exposed (Internet / public IP)"
+msgstr "Exposé (Internet / IP publique)"
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+# ── Connexion ──────────────────────────────────────────────────────────────
+msgid "Wired"
+msgstr "Filaire"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "Wired + Wi-Fi"
+msgstr "Filaire + Wi-Fi"
+
+msgid "Not connected"
+msgstr "Non connecté"
+
+# ── Statuts de flux ────────────────────────────────────────────────────────
+msgid "Production"
+msgstr "Production"
+
+msgid "Test / staging"
+msgstr "Test / recette"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+# ── Champs communs ─────────────────────────────────────────────────────────
+msgid "Establishment"
+msgstr "Établissement"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Manager"
+msgstr "Responsable"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "technical platform"
+msgstr "plateau technique"
+
+msgid "technical platforms"
+msgstr "plateaux techniques"
+
+msgid "Technical platform"
+msgstr "Plateau technique"
+
+msgid "Technical platforms"
+msgstr "Plateaux techniques"
+
+msgid "Role"
+msgstr "Rôle"
+
+msgid "Device class"
+msgstr "Classe DM"
+
+msgid "Criticality"
+msgstr "Criticité"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Location (room)"
+msgstr "Localisation (salle)"
+
+msgid "Care unit"
+msgstr "Unité de soins"
+
+msgid "Manufacturer"
+msgstr "Fabricant"
+
+msgid "Model"
+msgstr "Modèle"
+
+msgid "Serial number"
+msgstr "Numéro de série"
+
+msgid "CMMS number"
+msgstr "N° GMAO"
+
+msgid "Mercator ID"
+msgstr "Identifiant Mercator"
+
+msgid "Commissioning date"
+msgstr "Date de mise en service"
+
+msgid "Primary IP"
+msgstr "IP principale"
+
+msgid "MAC address"
+msgstr "Adresse MAC"
+
+msgid "Hostname"
+msgstr "Nom d'hôte"
+
+msgid "AE Title"
+msgstr "AE Title"
+
+msgid "Listening ports"
+msgstr "Ports d'écoute"
+
+msgid "Connection mode"
+msgstr "Mode de connexion"
+
+msgid "Wi-Fi SSID"
+msgstr "SSID Wi-Fi"
+
+msgid "DCIM device"
+msgstr "Équipement DCIM"
+
+msgid "Operating system"
+msgstr "Système d'exploitation"
+
+msgid "End of support"
+msgstr "Fin de support"
+
+msgid "Antivirus / EDR"
+msgstr "Antivirus / EDR"
+
+msgid "AV/EDR exclusions"
+msgstr "Exclusions AV/EDR"
+
+msgid "Vendor account"
+msgstr "Compte constructeur"
+
+msgid "Credentials vault reference"
+msgstr "Référence coffre-fort"
+
+msgid "Vendor remote maintenance"
+msgstr "Télémaintenance constructeur"
+
+msgid "Remote maintenance mode"
+msgstr "Mode de télémaintenance"
+
+msgid "Network exposure"
+msgstr "Exposition réseau"
+
+msgid "Applications fed"
+msgstr "Applications alimentées"
+
+msgid "Owner"
+msgstr "Responsable"
+
+msgid "Comments"
+msgstr "Commentaires"
+
+msgid "biomedical equipment"
+msgstr "équipement biomédical"
+
+msgid "biomedical equipments"
+msgstr "équipements biomédicaux"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Target"
+msgstr "Destination"
+
+msgid "Protocol"
+msgstr "Protocole"
+
+msgid "Message type"
+msgstr "Type de message"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "Encrypted"
+msgstr "Chiffré"
+
+msgid "EAI"
+msgstr "EAI"
+
+msgid "Source endpoint"
+msgstr "Extrémité source"
+
+msgid "EAI endpoint"
+msgstr "Extrémité EAI"
+
+msgid "Target endpoint"
+msgstr "Extrémité destination"
+
+msgid "Monitoring sensor"
+msgstr "Sonde de supervision"
+
+msgid "Recovery procedure"
+msgstr "Procédure de reprise"
+
+msgid "Vendor contact"
+msgstr "Contact éditeur"
+
+msgid "equipment flow"
+msgstr "flux biomédical"
+
+msgid "equipment flows"
+msgstr "flux biomédicaux"
+
+# ── Aides ──────────────────────────────────────────────────────────────────
+msgid "EU MDR / IVDR risk class (medical devices only)"
+msgstr "Classe de risque RDM / RDIV (dispositifs médicaux uniquement)"
+
+msgid "Equipment number in the biomedical CMMS (source of truth for the fleet)"
+msgstr "N° d'équipement dans la GMAO biomédicale (source de vérité du parc)"
+
+msgid "Name in the Mercator export (import reconciliation key)"
+msgstr "Nom dans l'export Mercator (clé de rapprochement à l'import)"
+
+msgid "DICOM Application Entity Title"
+msgstr "AE Title DICOM"
+
+msgid "e.g. 104, 2762, 8080"
+msgstr "ex. 104, 2762, 8080"
+
+msgid "Link to the discovered network object, when reconciled"
+msgstr "Lien vers l'objet réseau découvert, une fois rapproché"
+
+msgid "Vendor end of software/OS support"
+msgstr "Fin de support logiciel/OS par le fournisseur"
+
+msgid "Endpoint protection deployed, or vendor restriction"
+msgstr "Protection de poste déployée, ou restriction constructeur"
+
+msgid "Manufacturer/service account present on the device (audit of default accounts)"
+msgstr "Compte constructeur/service présent sur l'équipement (audit des comptes par défaut)"
+
+msgid "Reference of the secret in the password vault — never the secret itself"
+msgstr "Référence du secret dans le coffre-fort — jamais le secret lui-même"
+
+msgid "e.g. named VPN, vendor box, 4G modem…"
+msgstr "ex. VPN nominatif, boîtier constructeur, modem 4G…"
+
+msgid "IT-landscape applications this equipment feeds (PACS, LIS…)"
+msgstr "Applications it-landscape alimentées par cet équipement (PACS, SIL…)"
+
+msgid "e.g. DICOM, HL7, ASTM, HTTPS, SFTP"
+msgstr "ex. DICOM, HL7, ASTM, HTTPS, SFTP"
+
+msgid "e.g. Worklist, Identities/movements, Results, Report"
+msgstr "ex. Worklist, Identités/mouvements, Résultats, CR"
+
+msgid "Integration engine carrying the flow, if any"
+msgstr "Moteur d'intégration portant le flux, le cas échéant"
+
+msgid "IP:port on the source side"
+msgstr "IP:port côté source"
+
+msgid "IP:port on the integration engine, when relayed"
+msgstr "IP:port sur le moteur d'intégration, si relayé"
+
+msgid "IP:port on the target side"
+msgstr "IP:port côté destination"
+
+msgid "Link to the PRTG sensor supervising this flow"
+msgstr "Lien vers la sonde PRTG supervisant ce flux"
+
+msgid "A documented recovery procedure exists"
+msgstr "Une procédure de reprise documentée existe"
+
+# ── Formulaires / filtres ──────────────────────────────────────────────────
+msgid "Identity"
+msgstr "Identité"
+
+msgid "Classification"
+msgstr "Classification"
+
+msgid "Attachment"
+msgstr "Rattachement"
+
+msgid "Hardware / fleet"
+msgstr "Matériel / parc"
+
+msgid "Network"
+msgstr "Réseau"
+
+msgid "Cyber posture"
+msgstr "Posture cyber"
+
+msgid "Functional links"
+msgstr "Liens fonctionnels"
+
+msgid "Flow"
+msgstr "Flux"
+
+msgid "Endpoints"
+msgstr "Extrémités"
+
+msgid "Operations"
+msgstr "Exploitation"
+
+msgid "OS out of support"
+msgstr "OS hors support"
+
+msgid "Has an IP address"
+msgstr "Possède une adresse IP"
+
+msgid "Monitored (PRTG)"
+msgstr "Supervisé (PRTG)"
+
+msgid "Establishment (ID)"
+msgstr "Établissement (ID)"
+
+msgid "Technical platform (ID)"
+msgstr "Plateau technique (ID)"
+
+msgid "Manufacturer (ID)"
+msgstr "Fabricant (ID)"
+
+msgid "Source (ID)"
+msgstr "Source (ID)"
+
+msgid "Target (ID)"
+msgstr "Destination (ID)"
+
+msgid "Equipment (source or target)"
+msgstr "Équipement (source ou destination)"
+
+# ── Tables ─────────────────────────────────────────────────────────────────
+msgid "Equipments"
+msgstr "Équipements"
+
+msgid "Equipment"
+msgstr "Équipement"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Exposure"
+msgstr "Exposition"
+
+msgid "Connection"
+msgstr "Connexion"
+
+msgid "Remote maint."
+msgstr "Télémaint."
+
+msgid "Applications"
+msgstr "Applications"
+
+msgid "Monitoring"
+msgstr "Supervision"
+
+msgid "Flows"
+msgstr "Flux"
+
+# ── Navigation / tableau de bord ───────────────────────────────────────────
+msgid "Cyber dashboard"
+msgstr "Tableau de bord cyber"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Cyber"
+msgstr "Cyber"
+
+msgid "Referential"
+msgstr "Référentiel"
+
+msgid "Biomedical cyber dashboard"
+msgstr "Tableau de bord cyber biomédical"
+
+msgid "Fleet"
+msgstr "Parc"
+
+msgid "Referenced objects"
+msgstr "Objets référencés"
+
+msgid "equipments and supporting infrastructure"
+msgstr "équipements et infrastructure support"
+
+msgid "Medical devices"
+msgstr "Dispositifs médicaux"
+
+msgid "role = medical device"
+msgstr "rôle = dispositif médical"
+
+msgid "between referenced objects"
+msgstr "entre objets référencés"
+
+msgid "Devices without IP"
+msgstr "DM sans IP"
+
+msgid "cartography completeness"
+msgstr "complétude de la cartographie"
+
+msgid "Unencrypted flows"
+msgstr "Flux non chiffrés"
+
+msgid "cleartext exchanges"
+msgstr "échanges en clair"
+
+msgid "unknown"
+msgstr "inconnus"
+
+msgid "Exposed equipment"
+msgstr "Équipements exposés"
+
+msgid "flat network or public exposure"
+msgstr "réseau à plat ou exposition publique"
+
+msgid "vendor support ended"
+msgstr "support fournisseur terminé"
+
+msgid "Unmonitored flows"
+msgstr "Flux non supervisés"
+
+msgid "no PRTG sensor"
+msgstr "aucune sonde PRTG"
+
+msgid "remote access to audit"
+msgstr "accès distants à auditer"
+
+msgid "Wi-Fi equipment"
+msgstr "Équipements Wi-Fi"
+
+msgid "wireless attack surface"
+msgstr "surface d'attaque sans fil"
+
+msgid "Per establishment"
+msgstr "Par établissement"
+
+msgid "Objects"
+msgstr "Objets"
+
+msgid "Exposed"
+msgstr "Exposés"
+
+msgid "No data yet"
+msgstr "Pas encore de données"
+
+# ── Détails ────────────────────────────────────────────────────────────────
+msgid "Outgoing flows"
+msgstr "Flux sortants"
+
+msgid "Incoming flows"
+msgstr "Flux entrants"
+
+msgid "Out of support"
+msgstr "Hors support"
+
+msgid "Not monitored"
+msgstr "Non supervisé"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "None"
+msgstr "Aucune"
+
+# ── Cartographie ───────────────────────────────────────────────────────────
+msgid "Biomedical cartography"
+msgstr "Cartographie biomédicale"
+
+msgid "Cartography"
+msgstr "Cartographie"
+
+msgid "Technical platforms, equipment and flows — red edges are unencrypted"
+msgstr "Plateaux techniques, équipements et flux — les liens rouges sont non chiffrés"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Search"
+msgstr "Recherche"
+
+msgid "Equipment, message…"
+msgstr "Équipement, message…"
+
+msgid "Filter"
+msgstr "Filtrer"
+
+msgid "equip."
+msgstr "équip."
+
+msgid "devices"
+msgstr "DM"
+
+msgid "cleartext"
+msgstr "en clair"
+
+msgid "No technical platform"
+msgstr "Aucun plateau technique"
+
+msgid "Flow map"
+msgstr "Carte des flux"
+
+msgid "flows"
+msgstr "flux"
+
+msgid "unencrypted"
+msgstr "non chiffrés"
+
+msgid "Unencrypted flow"
+msgstr "Flux non chiffré"
+
+msgid "Encrypted flow"
+msgstr "Flux chiffré"
+
+msgid "No platform"
+msgstr "Sans plateau"
+
+msgid "No flow matches these criteria."
+msgstr "Aucun flux ne correspond à ces critères."
+
+# ── Familles de flux ───────────────────────────────────────────────────────
+msgid "Technical platforms, equipment and flows colored by flow type"
+msgstr "Plateaux techniques, équipements et flux colorés par type de flux"
+
+msgid "Flow type"
+msgstr "Type de flux"
+
+msgid "Flow types"
+msgstr "Types de flux"
+
+msgid "Roles"
+msgstr "Rôles"
+
+msgid "Images / DICOM"
+msgstr "Images / DICOM"
+
+msgid "Worklist / RDV"
+msgstr "Worklist / RDV"
+
+msgid "Identities / movements"
+msgstr "Identités / mouvements"
+
+msgid "Lab results & analyzers"
+msgstr "Résultats labo & automates"
+
+msgid "Reports / documents"
+msgstr "CR / documents"
+
+msgid "Vital signs & signals"
+msgstr "Constantes & signaux"
+
+msgid "Telemedicine"
+msgstr "Télémédecine"
+
+msgid "Operations (print, backup…)"
+msgstr "Exploitation (impression, sauvegarde…)"
+
+msgid "Remote maintenance"
+msgstr "Télémaintenance"
+
+msgid "Referentials & management"
+msgstr "Référentiels & gestion"
+
+msgid "No platform"
+msgstr "Sans plateau"
+
+# ── Modes de vue ───────────────────────────────────────────────────────────
+msgid "Flow view"
+msgstr "Vue flux"
+
+msgid "Platform view"
+msgstr "Vue plateaux"

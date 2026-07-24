@@ -1,0 +1,112 @@
+{% extends 'base/layout.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Biomedical cyber dashboard" %}{% endblock %}
+
+{% block content %}
+<style>
+  .bio-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .7rem; margin-bottom: 1rem; }
+  .bio-kpi {
+    border: 1px solid var(--tblr-border-color); border-radius: .6rem;
+    background: var(--tblr-bg-surface); padding: .8rem .9rem;
+    border-top: 4px solid var(--tblr-primary, #1b75bc);
+    text-decoration: none; display: block; color: inherit;
+  }
+  .bio-kpi:hover { box-shadow: 0 1px 6px rgba(0,0,0,.12); }
+  .bio-kpi.is-red { border-top-color: #dc2626; }
+  .bio-kpi.is-orange { border-top-color: #f59e0b; }
+  .bio-kpi.is-green { border-top-color: #16a34a; }
+  .bio-kpi.is-purple { border-top-color: #8b5cf6; }
+  .bio-kpi .v { font-size: 1.7rem; font-weight: 700; line-height: 1.1; color: var(--tblr-body-color); }
+  .bio-kpi .l { font-size: .78rem; font-weight: 600; color: var(--tblr-body-color); margin-bottom: .15rem; }
+  .bio-kpi .s { font-size: .72rem; color: var(--tblr-secondary, var(--tblr-muted)); }
+</style>
+
+<h1 class="mb-3">{% trans "Biomedical cyber dashboard" %}</h1>
+
+<h2 class="h4">{% trans "Fleet" %}</h2>
+<div class="bio-kpi-row">
+  <a class="bio-kpi" href="{% url 'plugins:netbox_biomed:equipment_list' %}">
+    <div class="l">{% trans "Referenced objects" %}</div>
+    <div class="v">{{ total_count }}</div>
+    <div class="s">{% trans "equipments and supporting infrastructure" %}</div>
+  </a>
+  <a class="bio-kpi is-green" href="{% url 'plugins:netbox_biomed:equipment_list' %}?role=medical_device">
+    <div class="l">{% trans "Medical devices" %}</div>
+    <div class="v">{{ device_count }}</div>
+    <div class="s">{% trans "role = medical device" %}</div>
+  </a>
+  <a class="bio-kpi" href="{% url 'plugins:netbox_biomed:equipmentflow_list' %}">
+    <div class="l">{% trans "Flows" %}</div>
+    <div class="v">{{ flow_count }}</div>
+    <div class="s">{% trans "between referenced objects" %}</div>
+  </a>
+  <a class="bio-kpi is-orange" href="{% url 'plugins:netbox_biomed:equipment_list' %}?role=medical_device&has_ip=false">
+    <div class="l">{% trans "Devices without IP" %}</div>
+    <div class="v">{{ no_ip_device_count }}</div>
+    <div class="s">{% trans "cartography completeness" %}</div>
+  </a>
+</div>
+
+<h2 class="h4">{% trans "Cyber posture" %}</h2>
+<div class="bio-kpi-row">
+  <a class="bio-kpi is-red" href="{% url 'plugins:netbox_biomed:equipmentflow_list' %}?encrypted=false">
+    <div class="l">{% trans "Unencrypted flows" %}</div>
+    <div class="v">{{ unencrypted_count }}</div>
+    <div class="s">{% trans "cleartext exchanges" %} · {{ unknown_encryption_count }} {% trans "unknown" %}</div>
+  </a>
+  <a class="bio-kpi is-red" href="{% url 'plugins:netbox_biomed:equipment_list' %}?network_exposure=flat&network_exposure=exposed">
+    <div class="l">{% trans "Exposed equipment" %}</div>
+    <div class="v">{{ exposed_count }}</div>
+    <div class="s">{% trans "flat network or public exposure" %}</div>
+  </a>
+  <a class="bio-kpi is-red" href="{% url 'plugins:netbox_biomed:equipment_list' %}?os_obsolete=true">
+    <div class="l">{% trans "OS out of support" %}</div>
+    <div class="v">{{ os_obsolete_count }}</div>
+    <div class="s">{% trans "vendor support ended" %}</div>
+  </a>
+  <a class="bio-kpi is-orange" href="{% url 'plugins:netbox_biomed:equipmentflow_list' %}?monitored=false">
+    <div class="l">{% trans "Unmonitored flows" %}</div>
+    <div class="v">{{ unmonitored_count }}</div>
+    <div class="s">{% trans "no PRTG sensor" %}</div>
+  </a>
+  <a class="bio-kpi is-purple" href="{% url 'plugins:netbox_biomed:equipment_list' %}?remote_maintenance=true">
+    <div class="l">{% trans "Vendor remote maintenance" %}</div>
+    <div class="v">{{ remote_count }}</div>
+    <div class="s">{% trans "remote access to audit" %}</div>
+  </a>
+  <a class="bio-kpi is-orange" href="{% url 'plugins:netbox_biomed:equipment_list' %}?connection_mode=wifi&connection_mode=wired_wifi">
+    <div class="l">{% trans "Wi-Fi equipment" %}</div>
+    <div class="v">{{ wifi_count }}</div>
+    <div class="s">{% trans "wireless attack surface" %}</div>
+  </a>
+</div>
+
+<h2 class="h4">{% trans "Per establishment" %}</h2>
+<div class="card">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>{% trans "Establishment" %}</th>
+        <th>{% trans "Objects" %}</th>
+        <th>{% trans "Medical devices" %}</th>
+        <th>{% trans "Exposed" %}</th>
+        <th>{% trans "OS out of support" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in per_site %}
+        <tr>
+          <td>{{ row.site__name }}</td>
+          <td>{{ row.total }}</td>
+          <td>{{ row.dm }}</td>
+          <td>{% if row.exposed %}<span class="badge text-bg-red">{{ row.exposed }}</span>{% else %}0{% endif %}</td>
+          <td>{% if row.obsolete %}<span class="badge text-bg-red">{{ row.obsolete }}</span>{% else %}0{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-muted">{% trans "No data yet" %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

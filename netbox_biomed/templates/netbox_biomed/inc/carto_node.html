@@ -1,0 +1,17 @@
+<a href="/plugins/biomed/equipements/{{ node.pk }}/">
+  <g>
+    <title>{{ node.label }}</title>
+    <path class="bio-node" d="{{ node.body }}" stroke="{{ node.color }}" stroke-width="1.4"></path>
+    <path d="{{ node.body }}" fill="{{ node.color }}" fill-opacity="0.12" stroke="none" pointer-events="none"></path>
+    {% if node.body_inner %}
+      <path d="{{ node.body_inner }}" fill="none" stroke="{{ node.color }}" stroke-width="0.9" pointer-events="none"></path>
+    {% endif %}
+    <g transform="translate({{ node.icon_x }}, {{ node.icon_y }})">
+      <path d="{{ node.icon }}" fill="none" stroke="{{ node.color }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+    <text class="bio-node-label" x="{{ node.text_x }}" y="{{ node.text_y }}">{{ node.display }}</text>
+    {% for chip in node.chips %}
+      <circle cx="{{ chip.cx }}" cy="{{ chip.cy }}" r="4" fill="{{ chip.color }}" stroke="var(--tblr-bg-surface, #fff)" stroke-width="1"></circle>
+    {% endfor %}
+  </g>
+</a>
