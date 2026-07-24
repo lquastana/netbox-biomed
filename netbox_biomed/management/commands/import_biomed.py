@@ -4,7 +4,7 @@ the local converter `mercator_to_json.py`). Idempotent: objects are resolved
 by name / mercator_id and updated in place, so the command can be replayed.
 
 Usage:
-    manage.py import_biomed --file /tmp/mercator_biomed.json [--default-site "GHT Haute Corse"] [--dry-run]
+    manage.py import_biomed --file /tmp/mercator_biomed.json --default-site "Mon Etablissement" [--dry-run]
 """
 import json
 
@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--file', required=True, help='Path to the normalized JSON file')
-        parser.add_argument('--default-site', default='GHT Haute Corse',
+        parser.add_argument('--default-site', required=True,
                             help='Site name used when an object carries no site')
         parser.add_argument('--dry-run', action='store_true')
 

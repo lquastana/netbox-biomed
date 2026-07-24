@@ -19,7 +19,8 @@ from .choices import (
 class Plateau(NetBoxModel):
     """
     Technical platform grouping biomedical equipment of a facility
-    (e.g. "Plateau Imagerie CH Bastia"). Maps the Mercator "Bloc applicatif".
+    (e.g. "Plateau imagerie", "Plateau biologie délocalisée"). Maps the
+    Mercator "Bloc applicatif".
     """
     site = models.ForeignKey(
         to='dcim.Site',

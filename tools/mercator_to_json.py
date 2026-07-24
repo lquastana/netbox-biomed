@@ -138,12 +138,23 @@ def guess_manufacturer(name, description):
 
 # ── Sites & catégories depuis le nom de bloc/équipement ────────────────────
 
+# Mapping mot-clé → nom de site NetBox, spécifique à l'organisation :
+# chargé depuis `site_map.json` (NON versionné, cf. site_map.example.json).
+# Format : {"default": "Mon Site", "keywords": {"mot-clé": "Nom du site"}}
+_SITE_MAP_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'site_map.json')
+if os.path.exists(_SITE_MAP_FILE):
+    with open(_SITE_MAP_FILE, encoding='utf-8') as _fh:
+        _SITE_MAP = json.load(_fh)
+else:
+    _SITE_MAP = {'default': 'Etablissement', 'keywords': {}}
+
+
 def site_for(text):
     t = (text or '').lower()
-    if 'corte' in t:
-        return 'CH Corte'
-    # Bastia, Calvi et le socle GHT relèvent du site GHT Haute Corse
-    return 'GHT Haute Corse'
+    for keyword, site in _SITE_MAP.get('keywords', {}).items():
+        if keyword.lower() in t:
+            return site
+    return _SITE_MAP.get('default', 'Etablissement')
 
 
 CATEGORY_KEYWORDS = [
