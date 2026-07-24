@@ -16,3 +16,4 @@ tools/requalify_rules.json
 
 # Mapping de sites local (spécifique à l'organisation)
 tools/site_map.json
+bundle_biomed_*.json

@@ -148,30 +148,47 @@ class Command(BaseCommand):
             if obj is None:
                 obj = Equipment.objects.filter(name=row['name']).first()
 
-            plateau = None
-            if row.get('plateau'):
-                plateau = Plateau.objects.filter(name=row['plateau']).first()
+            # `plateaux` (liste, export NetBox) ou `plateau` (unique, export Mercator)
+            names = row.get('plateaux') or ([row['plateau']] if row.get('plateau') else [])
+            plateaux = []
+            for plateau_name in names:
+                plateau = Plateau.objects.filter(name=plateau_name).first()
                 if plateau is None:
-                    self.skipped.append(f"plateau inconnu {row['plateau']!r} pour {row['name']!r}")
+                    self.skipped.append(
+                        f"plateau inconnu {plateau_name!r} pour {row['name']!r}")
+                else:
+                    plateaux.append(plateau)
 
             fields = {
                 'role': row.get('role', 'medical_device'),
-                'description': row.get('description', '')[:500],
+                'description': (row.get('description') or '')[:500],
                 'category': row.get('category', ''),
+                'device_class': row.get('device_class', ''),
+                'criticality': row.get('criticality') or 'standard',
+                'status': row.get('status') or 'in_service',
                 'site': site,
+                'care_unit': (row.get('care_unit') or '')[:100],
+                'model': (row.get('model') or '')[:100],
+                'serial': (row.get('serial') or '')[:100],
                 'gmao_id': row.get('gmao_id', ''),
                 'mercator_id': row.get('mercator_id', ''),
-                'mac_address': row.get('mac_address', '')[:50],
-                'hostname': row.get('hostname', '')[:100],
-                'ae_title': row.get('ae_title', '')[:100],
-                'listen_ports': row.get('listen_ports', '')[:200],
+                'commissioning_date': row.get('commissioning_date') or None,
+                'mac_address': (row.get('mac_address') or '')[:50],
+                'hostname': (row.get('hostname') or '')[:100],
+                'ae_title': (row.get('ae_title') or '')[:100],
+                'listen_ports': (row.get('listen_ports') or '')[:200],
                 'connection_mode': row.get('connection_mode', ''),
-                'ssid': row.get('ssid', '')[:100],
-                'edr': row.get('edr', '')[:100],
-                'edr_exclusions': row.get('edr_exclusions', '')[:200],
-                'vendor_account': row.get('vendor_account', '')[:100],
+                'ssid': (row.get('ssid') or '')[:100],
+                'os': (row.get('os') or '')[:100],
+                'end_of_support': row.get('end_of_support') or None,
+                'edr': (row.get('edr') or '')[:100],
+                'edr_exclusions': (row.get('edr_exclusions') or '')[:200],
+                'vendor_account': (row.get('vendor_account') or '')[:100],
+                'vault_ref': (row.get('vault_ref') or '')[:200],
+                'remote_maintenance': row.get('remote_maintenance'),
+                'remote_maintenance_mode': (row.get('remote_maintenance_mode') or '')[:100],
                 'network_exposure': row.get('network_exposure', 'unknown'),
-                'owner': row.get('owner', '')[:100],
+                'owner': (row.get('owner') or '')[:100],
                 'comments': row.get('comments', ''),
             }
             manufacturer = self.resolve_manufacturer(row.get('manufacturer'))
@@ -183,8 +200,7 @@ class Command(BaseCommand):
 
             if obj is None:
                 obj = Equipment.objects.create(name=row['name'], **fields)
-                if plateau is not None:
-                    obj.plateaux.add(plateau)
+                obj.plateaux.set(plateaux)
                 self.created['equipment'] += 1
             else:
                 changed = False
@@ -194,8 +210,11 @@ class Command(BaseCommand):
                     if getattr(obj, attr) != value:
                         setattr(obj, attr, value)
                         changed = True
-                if plateau is not None and not obj.plateaux.filter(pk=plateau.pk).exists():
-                    obj.plateaux.add(plateau)
+                # union : on ajoute les rattachements manquants sans en retirer
+                missing = [p for p in plateaux
+                           if not obj.plateaux.filter(pk=p.pk).exists()]
+                if missing:
+                    obj.plateaux.add(*missing)
                     changed = True
                 if changed:
                     obj.save()

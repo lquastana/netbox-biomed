@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "netbox-biomed"
-version = "0.6.0"
+version = "0.6.1"
 description = "Cartographie des équipements biomédicaux connectés dans NetBox : plateaux techniques, équipements, flux et posture cyber"
 readme = "README.md"
 authors = [{ name = "Laurent Quastana" }]
