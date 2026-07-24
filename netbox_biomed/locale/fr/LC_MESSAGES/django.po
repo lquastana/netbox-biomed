@@ -620,7 +620,7 @@ msgid "equip."
 msgstr "équip."
 
 msgid "devices"
-msgstr "DM"
+msgstr "dispositifs"
 
 msgid "cleartext"
 msgstr "en clair"

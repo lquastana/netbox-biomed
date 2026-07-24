@@ -8,7 +8,7 @@ class BiomedConfig(PluginConfig):
         "Cartographie des équipements biomédicaux connectés : plateaux "
         "techniques, équipements, flux et posture cyber."
     )
-    version = '0.4.1'
+    version = '0.5.0'
     author = 'Laurent Quastana'
     base_url = 'biomed'
     min_version = '4.0'

@@ -262,8 +262,9 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         })
 
     def _build_cards(self, site_id, plateau_id, role, family, q):
-        """Vue plateaux compacte : une card par plateau, équipements en
-        chips (mini-forme de rôle + pastilles des familles de flux)."""
+        """Vue plateaux compacte : une card par plateau, équipements groupés
+        par rôle (en-tête de section icône + libellé + compteur), chaque item
+        = point de rôle + nom + pastilles des familles de flux."""
         equipments = Equipment.objects.select_related('plateau', 'plateau__site', 'site')
         if site_id:
             equipments = equipments.filter(site_id=site_id)
@@ -276,12 +277,14 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         equipments = list(equipments.order_by('site__name', 'plateau__name', 'name'))
         # tri par rôle (ordre du ChoiceSet : DM d'abord), puis par nom
         role_rank = {choice[0]: i for i, choice in enumerate(EquipmentRoleChoices.CHOICES)}
+        role_label = {choice[0]: choice[1] for choice in EquipmentRoleChoices.CHOICES}
         equipments.sort(key=lambda e: (role_rank.get(e.role, 99), e.name.lower()))
 
-        # familles de flux par équipement (pastilles)
+        # familles de flux par équipement (pastilles) + comptage de flux
+        flow_edges = list(EquipmentFlow.objects.values_list(
+            'source_id', 'target_id', 'message_type'))
         fam_map = {}
-        for src, tgt, mt in EquipmentFlow.objects.values_list(
-                'source_id', 'target_id', 'message_type'):
+        for src, tgt, mt in flow_edges:
             fam = family_of(mt)
             fam_map.setdefault(src, set()).add(fam)
             fam_map.setdefault(tgt, set()).add(fam)
@@ -297,11 +300,8 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             return {
                 'pk': e.pk,
                 'label': name,
-                'display': name if len(name) <= 26 else name[:25] + '…',
+                'display': name if len(name) <= 32 else name[:31] + '…',
                 'color': ROLE_HEX.get(e.role, '#9e9e9e'),
-                'body': node_shape(e.role, 1, 1, 30, 15),
-                'body_inner': node_shape_inner(e.role, 1, 1, 30, 15),
-                'icon': node_icon(e.role),
                 'dots': [
                     {'color': family_color(f),
                      'label': str(FAMILY_LABEL.get(f, f))}
@@ -318,13 +318,34 @@ class BiomedCartoView(PermissionRequiredMixin, View):
                                 kv[0].name.lower() if kv[0] else '')):
             dm_count = sum(1 for e in members
                            if e.role == EquipmentRoleChoices.MEDICAL_DEVICE)
+            member_ids = {e.pk for e in members}
+            flow_count = sum(1 for s, t, _ in flow_edges
+                             if s in member_ids or t in member_ids)
+
+            # groupes par rôle, dans l'ordre du ChoiceSet
+            role_groups = OrderedDict()
+            for e in members:
+                role_groups.setdefault(e.role, []).append(e)
+            groups_out = [
+                {
+                    'label': role_label.get(r, r),
+                    'color': ROLE_HEX.get(r, '#9e9e9e'),
+                    'icon': node_icon(r),
+                    'count': len(items),
+                    'equipments': [chip(e) for e in items],
+                }
+                for r, items in role_groups.items()
+            ]
+
             cards.append({
                 'plateau': plateau,
                 'site': plateau.site if plateau else None,
                 'color': CATEGORY_HEX.get(plateau.category, '#9e9e9e') if plateau else '#9e9e9e',
+                'category': plateau.get_category_display() if plateau and plateau.category else '',
                 'count': len(members),
                 'dm_count': dm_count,
-                'equipments': [chip(e) for e in members],
+                'flow_count': flow_count,
+                'groups': groups_out,
             })
         return cards
 
@@ -440,6 +461,8 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             protocols = ', '.join(sorted(entry['protocols']))
             detail = f'{types}' + (f' · {protocols}' if protocols else '')
             edges.append({
+                'src_pk': entry['source'].pk,
+                'dst_pk': entry['target'].pk,
                 'x1': src['x'] + self.NODE_WIDTH,
                 'y1': src['y'] + self.NODE_HEIGHT // 2,
                 'x2': dst['x'],

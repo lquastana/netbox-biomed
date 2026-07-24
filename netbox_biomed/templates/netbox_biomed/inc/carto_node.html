@@ -1,5 +1,5 @@
 <a href="/plugins/biomed/equipements/{{ node.pk }}/">
-  <g>
+  <g class="bio-node-g" data-eq="{{ node.pk }}">
     <title>{{ node.label }}</title>
     <path class="bio-node" d="{{ node.body }}" stroke="{{ node.color }}" stroke-width="1.4"></path>
     <path d="{{ node.body }}" fill="{{ node.color }}" fill-opacity="0.12" stroke="none" pointer-events="none"></path>

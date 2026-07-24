@@ -24,19 +24,32 @@
 
   .bio-diagram { overflow-x: auto; }
 
-  .bio-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: .8rem; align-items: start; }
-  .bio-card { border: 1px solid var(--tblr-border-color); border-radius: .6rem; background: var(--tblr-bg-surface); border-top: 4px solid var(--card-c, #9e9e9e); }
-  .bio-card-header { padding: .55rem .8rem; border-bottom: 1px solid var(--tblr-border-color); display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
-  .bio-card-header .t { font-weight: 700; font-size: .85rem; }
+  .bio-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: .8rem; align-items: start; }
+  .bio-card { border: 1px solid var(--tblr-border-color); border-radius: .6rem; background: var(--tblr-bg-surface); border-left: 4px solid var(--card-c, #9e9e9e); }
+  .bio-card-header { padding: .6rem .8rem; border-bottom: 1px solid var(--tblr-border-color); display: flex; justify-content: space-between; align-items: flex-start; gap: .6rem; }
+  .bio-card-header .t { font-weight: 700; font-size: .88rem; line-height: 1.2; }
   .bio-card-header .t a { color: inherit; text-decoration: none; }
-  .bio-card-header .s { font-size: .7rem; color: var(--tblr-secondary, var(--tblr-muted)); white-space: nowrap; }
-  .bio-card-body { padding: .45rem .55rem; display: flex; flex-direction: column; gap: .15rem; }
-  .bio-chip { display: flex; align-items: center; gap: .4rem; padding: .18rem .35rem; border-radius: .4rem; text-decoration: none; color: inherit; font-size: .78rem; }
-  .bio-chip:hover { background: var(--tblr-active-bg, rgba(98,105,118,.06)); color: inherit; }
-  .bio-chip svg { flex: 0 0 auto; }
+  .bio-card-header .s { font-size: .7rem; color: var(--tblr-secondary, var(--tblr-muted)); margin-top: .1rem; }
+  .bio-card-header .s .cat { color: var(--card-c); font-weight: 600; }
+  .bio-card-header .metrics { text-align: right; font-size: .7rem; color: var(--tblr-secondary, var(--tblr-muted)); white-space: nowrap; line-height: 1.5; }
+  .bio-card-body { padding: .45rem .6rem .6rem; display: flex; flex-direction: column; gap: .1rem; }
+  .bio-role-head { display: flex; align-items: center; gap: .4rem; margin: .45rem 0 .15rem; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--rc); }
+  .bio-role-head:first-child { margin-top: .1rem; }
+  .bio-role-head .rc { font-weight: 600; color: var(--tblr-secondary, var(--tblr-muted)); }
+  .bio-chip { display: flex; align-items: center; gap: .45rem; padding: .16rem .35rem; border-radius: .4rem; text-decoration: none; color: inherit; font-size: .78rem; }
+  .bio-chip:hover { background: var(--tblr-active-bg, rgba(98,105,118,.08)); color: inherit; }
+  .bio-chip .dot { width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; }
   .bio-chip .n { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bio-chip .dots { display: flex; gap: 3px; flex: 0 0 auto; }
   .bio-chip .dots i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* Survol vue flux : mise en avant du composant et de ses voisins */
+  #bio-flux-svg .bio-edge, #bio-flux-svg .bio-node-g { transition: opacity .15s ease; }
+  #bio-flux-svg.focus .bio-edge { opacity: .05; }
+  #bio-flux-svg.focus .bio-node-g { opacity: .1; }
+  #bio-flux-svg.focus .bio-edge.hl-edge { opacity: 1; }
+  #bio-flux-svg.focus .bio-node-g.hl-node { opacity: 1; }
+  #bio-flux-svg .bio-node-g.hl-self .bio-node { stroke: #f59e0b !important; stroke-width: 2.2; }
   .bio-node { fill: var(--tblr-bg-surface, #fff); stroke: #94a3b8; }
   .bio-node-label { font-size: 11.5px; font-weight: 600; fill: currentColor; }
   .bio-group-label { font-size: 10.5px; font-weight: 700; fill: #64748b; text-transform: uppercase; letter-spacing: .04em; }
@@ -119,33 +132,43 @@
   {% for card in cards %}
     <div class="bio-card" style="--card-c: {{ card.color }};">
       <div class="bio-card-header">
-        <span class="t">
-          {% if card.plateau %}
-            <a href="{{ card.plateau.get_absolute_url }}">{{ card.plateau.name }}</a>
-          {% else %}
-            {% trans "No platform" %}
-          {% endif %}
-        </span>
-        <span class="s">
-          {% if card.site %}{{ card.site.name }} · {% endif %}
-          {{ card.dm_count }} {% trans "devices" %} / {{ card.count }} {% trans "equip." %}
-        </span>
+        <div>
+          <div class="t">
+            {% if card.plateau %}
+              <a href="{{ card.plateau.get_absolute_url }}">{{ card.plateau.name }}</a>
+            {% else %}
+              {% trans "No platform" %}
+            {% endif %}
+          </div>
+          <div class="s">
+            {% if card.site %}{{ card.site.name }}{% endif %}{% if card.category %} · <span class="cat">{{ card.category }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="metrics">
+          <div>{{ card.dm_count }} {% trans "devices" %} · {{ card.count }} {% trans "equip." %}</div>
+          <div>{{ card.flow_count }} {% trans "flows" %}</div>
+        </div>
       </div>
       <div class="bio-card-body">
-        {% for chip in card.equipments %}
-          <a class="bio-chip" href="/plugins/biomed/equipements/{{ chip.pk }}/" title="{{ chip.label }}">
-            <svg width="32" height="17" viewBox="0 0 32 17" xmlns="http://www.w3.org/2000/svg">
-              <path d="{{ chip.body }}" fill="{{ chip.color }}" fill-opacity="0.14" stroke="{{ chip.color }}" stroke-width="1.2"></path>
-              {% if chip.body_inner %}<path d="{{ chip.body_inner }}" fill="none" stroke="{{ chip.color }}" stroke-width="0.8"></path>{% endif %}
-              <g transform="translate(16, 8.5) scale(0.85)">
-                <path d="{{ chip.icon }}" fill="none" stroke="{{ chip.color }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+        {% for grp in card.groups %}
+          <div class="bio-role-head" style="--rc: {{ grp.color }};">
+            <svg width="18" height="14" viewBox="0 0 18 14" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(9, 7)">
+                <path d="{{ grp.icon }}" fill="none" stroke="{{ grp.color }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               </g>
             </svg>
-            <span class="n">{{ chip.display }}</span>
-            <span class="dots">
-              {% for dot in chip.dots %}<i style="background: {{ dot.color }};" title="{{ dot.label }}"></i>{% endfor %}
-            </span>
-          </a>
+            <span class="rl">{{ grp.label }}</span>
+            <span class="rc">{{ grp.count }}</span>
+          </div>
+          {% for chip in grp.equipments %}
+            <a class="bio-chip" href="/plugins/biomed/equipements/{{ chip.pk }}/" title="{{ chip.label }}">
+              <span class="dot" style="background: {{ chip.color }};"></span>
+              <span class="n">{{ chip.display }}</span>
+              <span class="dots">
+                {% for dot in chip.dots %}<i style="background: {{ dot.color }};" title="{{ dot.label }}"></i>{% endfor %}
+              </span>
+            </a>
+          {% endfor %}
         {% endfor %}
       </div>
     </div>
@@ -201,9 +224,9 @@
 {% if svg %}
   <div class="card mb-3">
     <div class="card-body bio-diagram">
-      <svg viewBox="0 0 {{ svg.width }} {{ svg.height }}" width="{{ svg.width }}" height="{{ svg.height }}" xmlns="http://www.w3.org/2000/svg">
+      <svg id="bio-flux-svg" viewBox="0 0 {{ svg.width }} {{ svg.height }}" width="{{ svg.width }}" height="{{ svg.height }}" xmlns="http://www.w3.org/2000/svg">
         {% for edge in svg.edges %}
-          <path class="bio-edge"
+          <path class="bio-edge" data-s="{{ edge.src_pk }}" data-t="{{ edge.dst_pk }}"
                 d="M {{ edge.x1 }} {{ edge.y1 }} C {{ edge.cx }} {{ edge.y1 }}, {{ edge.cx }} {{ edge.y2 }}, {{ edge.x2 }} {{ edge.y2 }}"
                 stroke="{{ edge.color }}" stroke-width="{{ edge.width }}" fill="none">
             <title>{{ edge.title }}</title>
@@ -224,5 +247,42 @@
 {% else %}
   <div class="alert alert-info">{% trans "No flow matches these criteria." %}</div>
 {% endif %}
+
+<script>
+  // Survol d'un composant : mise en avant de ses flux et de ses voisins
+  (function () {
+    var svg = document.getElementById('bio-flux-svg');
+    if (!svg) return;
+    var nodes = svg.querySelectorAll('.bio-node-g');
+    var edges = svg.querySelectorAll('.bio-edge');
+    function clear() {
+      svg.classList.remove('focus');
+      svg.querySelectorAll('.hl-edge, .hl-node, .hl-self').forEach(function (el) {
+        el.classList.remove('hl-edge', 'hl-node', 'hl-self');
+      });
+    }
+    nodes.forEach(function (node) {
+      node.addEventListener('mouseenter', function () {
+        clear();
+        var id = node.dataset.eq;
+        var linked = {};
+        linked[id] = true;
+        edges.forEach(function (edge) {
+          if (edge.dataset.s === id || edge.dataset.t === id) {
+            edge.classList.add('hl-edge');
+            linked[edge.dataset.s] = true;
+            linked[edge.dataset.t] = true;
+          }
+        });
+        nodes.forEach(function (other) {
+          if (linked[other.dataset.eq]) other.classList.add('hl-node');
+        });
+        node.classList.add('hl-self');
+        svg.classList.add('focus');
+      });
+      node.addEventListener('mouseleave', clear);
+    });
+  })();
+</script>
 {% endif %}
 {% endblock %}
