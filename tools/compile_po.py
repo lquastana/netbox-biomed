@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Compile .po → .mo sans gettext (msgfmt minimal, suffisant pour des entrées simples)."""
-import re
 import struct
 import sys
 

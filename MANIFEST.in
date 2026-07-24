@@ -1,0 +1,3 @@
+recursive-include netbox_biomed/templates *.html
+recursive-include netbox_biomed/locale *.po *.mo
+include LICENSE

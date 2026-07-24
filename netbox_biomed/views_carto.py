@@ -1,5 +1,6 @@
 from collections import Counter as collections_counter
 from collections import OrderedDict
+from urllib.parse import urlencode
 
 from dcim.models import Site
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -9,6 +10,12 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 
 from .choices import EquipmentRoleChoices, PlateauCategoryChoices
+from .flow_families import (
+    FAMILY_LABEL,
+    FLOW_FAMILIES,
+    family_color,
+    family_of,
+)
 from .models import Equipment, EquipmentFlow, Plateau
 
 # Hex colors for equipment roles (SVG node dots / chips)
@@ -41,18 +48,6 @@ CATEGORY_HEX = {
     PlateauCategoryChoices.AI: '#111827',
     PlateauCategoryChoices.OTHER: '#9e9e9e',
 }
-
-from urllib.parse import urlencode
-
-from .flow_families import (
-    FAMILY_LABEL,
-    FLOW_FAMILIES,
-    OTHER_COLOR,
-    OTHER_FAMILY,
-    family_color,
-    family_of,
-)
-
 
 # ── Per-role node shapes and icons ─────────────────────────────────────────
 
@@ -158,8 +153,13 @@ class BiomedCartoView(PermissionRequiredMixin, View):
     LABEL_MAX = 30
 
     def get(self, request):
-        site_id = request.GET.get('site_id') or ''
-        plateau_id = request.GET.get('plateau_id') or ''
+        def clean_id(value):
+            """N'accepte que des identifiants numériques (évite un 500 sur ?site_id=abc)."""
+            value = (value or '').strip()
+            return value if value.isdigit() else ''
+
+        site_id = clean_id(request.GET.get('site_id'))
+        plateau_id = clean_id(request.GET.get('plateau_id'))
         role = request.GET.get('role') or ''
         protocol = request.GET.get('protocol') or ''
         family = request.GET.get('family') or ''
@@ -171,7 +171,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         }.items() if v})
 
         # ── Plateau tiles ──────────────────────────────────────────────────
-        plateaux = Plateau.objects.select_related('site').annotate(
+        plateaux = Plateau.objects.restrict(request.user, 'view').select_related('site').annotate(
             equipment_count=Count('equipments', distinct=True),
             dm_count=Count('equipments', distinct=True, filter=Q(
                 equipments__role=EquipmentRoleChoices.MEDICAL_DEVICE)),
@@ -181,7 +181,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
 
         tiles = []
         for plateau in plateaux:
-            flow_count = EquipmentFlow.objects.filter(
+            flow_count = EquipmentFlow.objects.restrict(request.user, 'view').filter(
                 Q(source__plateau=plateau) | Q(target__plateau=plateau),
             ).count()
             tiles.append({
@@ -193,7 +193,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             })
 
         # ── Flows (filtered) ───────────────────────────────────────────────
-        flows = EquipmentFlow.objects.select_related(
+        flows = EquipmentFlow.objects.restrict(request.user, 'view').select_related(
             'source', 'source__plateau', 'target', 'target__plateau',
         )
         if site_id:
@@ -216,13 +216,14 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             flows = [f for f in flows if family_of(f.message_type) == family]
 
         svg = self._build_diagram(flows) if mode == 'flux' else None
-        cards = self._build_cards(site_id, plateau_id, role, family, q) \
+        cards = self._build_cards(request.user, site_id, plateau_id, role, family, q) \
             if mode == 'plateaux' else None
 
-        all_flows = EquipmentFlow.objects.all()
+        all_flows = EquipmentFlow.objects.restrict(request.user, 'view')
         protocols = sorted(set(all_flows.values_list('protocol', flat=True)) - {''})
-        sites_choices = Site.objects.filter(biomed_equipments__isnull=False).distinct().order_by('name')
-        plateaux_choices = Plateau.objects.order_by('name')
+        sites_choices = Site.objects.restrict(request.user, 'view').filter(
+            biomed_equipments__isnull=False).distinct().order_by('name')
+        plateaux_choices = Plateau.objects.restrict(request.user, 'view').order_by('name')
 
         legend_roles = [
             {
@@ -261,11 +262,12 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             'filter_q': q,
         })
 
-    def _build_cards(self, site_id, plateau_id, role, family, q):
+    def _build_cards(self, user, site_id, plateau_id, role, family, q):
         """Vue plateaux compacte : une card par plateau, équipements groupés
         par rôle (en-tête de section icône + libellé + compteur), chaque item
         = point de rôle + nom + pastilles des familles de flux."""
-        equipments = Equipment.objects.select_related('plateau', 'plateau__site', 'site')
+        equipments = Equipment.objects.restrict(user, 'view').select_related(
+            'plateau', 'plateau__site', 'site')
         if site_id:
             equipments = equipments.filter(site_id=site_id)
         if plateau_id:
@@ -281,7 +283,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         equipments.sort(key=lambda e: (role_rank.get(e.role, 99), e.name.lower()))
 
         # familles de flux par équipement (pastilles) + comptage de flux
-        flow_edges = list(EquipmentFlow.objects.values_list(
+        flow_edges = list(EquipmentFlow.objects.restrict(user, 'view').values_list(
             'source_id', 'target_id', 'message_type'))
         fam_map = {}
         for src, tgt, mt in flow_edges:

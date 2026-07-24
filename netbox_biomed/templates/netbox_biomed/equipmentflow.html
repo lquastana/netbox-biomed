@@ -84,7 +84,7 @@
             <th scope="row">{% trans "Monitoring sensor" %}</th>
             <td>
               {% if object.prtg_sensor %}
-                <a href="{{ object.prtg_sensor }}" target="_blank">{{ object.prtg_sensor }}</a>
+                <a href="{{ object.prtg_sensor }}" target="_blank" rel="noopener noreferrer">{{ object.prtg_sensor }}</a>
               {% else %}
                 <span class="badge text-bg-orange">{% trans "Not monitored" %}</span>
               {% endif %}

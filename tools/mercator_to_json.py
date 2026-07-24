@@ -211,7 +211,6 @@ def main():
     bloc = load('Bloc applicatif')
     flux = load('Flux applicatifs')
 
-    report = collections.OrderedDict()
     quality = collections.defaultdict(list)
 
     # ── 1. Plateaux (blocs applicatifs) ────────────────────────────────────

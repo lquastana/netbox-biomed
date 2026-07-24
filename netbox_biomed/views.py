@@ -140,9 +140,10 @@ class CyberDashboardView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         today = timezone.now().date()
 
-        equipments = Equipment.objects.all()
+        # object-level permissions : ne montrer que ce que l'utilisateur peut voir
+        equipments = Equipment.objects.restrict(self.request.user, 'view')
         devices = equipments.filter(role=EquipmentRoleChoices.MEDICAL_DEVICE)
-        flows = EquipmentFlow.objects.all()
+        flows = EquipmentFlow.objects.restrict(self.request.user, 'view')
 
         exposed = equipments.filter(network_exposure__in=[
             NetworkExposureChoices.FLAT, NetworkExposureChoices.EXPOSED,

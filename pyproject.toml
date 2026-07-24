@@ -4,16 +4,38 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "netbox-biomed"
-version = "0.5.0"
+version = "0.5.1"
 description = "Cartographie des équipements biomédicaux connectés dans NetBox : plateaux techniques, équipements, flux et posture cyber"
 readme = "README.md"
 authors = [{ name = "Laurent Quastana" }]
-license = { text = "Apache-2.0" }
+license = { text = "MIT" }
 requires-python = ">=3.10"
+keywords = ["netbox", "netbox-plugin", "biomedical", "healthcare", "medical-devices", "cartography"]
 classifiers = [
+    "Development Status :: 4 - Beta",
     "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Networking",
 ]
+
+[project.urls]
+Homepage = "https://github.com/lquastana/netbox-biomed"
+Repository = "https://github.com/lquastana/netbox-biomed"
+Issues = "https://github.com/lquastana/netbox-biomed/issues"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
 
 [tool.setuptools.packages.find]
 include = ["netbox_biomed*"]
