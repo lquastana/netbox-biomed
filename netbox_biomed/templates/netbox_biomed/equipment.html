@@ -38,8 +38,23 @@
             <td>{{ object.site|linkify }}</td>
           </tr>
           <tr>
-            <th scope="row">{% trans "Technical platform" %}</th>
-            <td>{{ object.plateau|linkify|placeholder }}</td>
+            <th scope="row">{% trans "Technical platforms" %}</th>
+            <td>
+              {% for plateau in object.plateaux.all %}
+                {{ plateau|linkify }}{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                {{ ''|placeholder }}
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Served establishments" %}</th>
+            <td>
+              {% for s in object.site_list %}
+                {{ s|linkify }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+              {% if object.is_multi_site %}<span class="badge text-bg-purple">{% trans "Multi-site" %}</span>{% endif %}
+            </td>
           </tr>
           <tr>
             <th scope="row">{% trans "Location (room)" %}</th>

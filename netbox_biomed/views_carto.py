@@ -182,8 +182,8 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         tiles = []
         for plateau in plateaux:
             flow_count = EquipmentFlow.objects.restrict(request.user, 'view').filter(
-                Q(source__plateau=plateau) | Q(target__plateau=plateau),
-            ).count()
+                Q(source__plateaux=plateau) | Q(target__plateaux=plateau),
+            ).distinct().count()
             tiles.append({
                 'plateau': plateau,
                 'color': CATEGORY_HEX.get(plateau.category, '#9e9e9e'),
@@ -194,12 +194,12 @@ class BiomedCartoView(PermissionRequiredMixin, View):
 
         # ── Flows (filtered) ───────────────────────────────────────────────
         flows = EquipmentFlow.objects.restrict(request.user, 'view').select_related(
-            'source', 'source__plateau', 'target', 'target__plateau',
+            'source', 'target',
         )
         if site_id:
             flows = flows.filter(Q(source__site_id=site_id) | Q(target__site_id=site_id))
         if plateau_id:
-            flows = flows.filter(Q(source__plateau_id=plateau_id) | Q(target__plateau_id=plateau_id))
+            flows = flows.filter(Q(source__plateaux=plateau_id) | Q(target__plateaux=plateau_id)).distinct()
         if role:
             flows = flows.filter(Q(source__role=role) | Q(target__role=role))
         if protocol:
@@ -267,16 +267,17 @@ class BiomedCartoView(PermissionRequiredMixin, View):
         par rôle (en-tête de section icône + libellé + compteur), chaque item
         = point de rôle + nom + pastilles des familles de flux."""
         equipments = Equipment.objects.restrict(user, 'view').select_related(
-            'plateau', 'plateau__site', 'site')
+            'site').prefetch_related('plateaux__site')
         if site_id:
-            equipments = equipments.filter(site_id=site_id)
+            equipments = equipments.filter(
+                Q(site_id=site_id) | Q(plateaux__site_id=site_id)).distinct()
         if plateau_id:
-            equipments = equipments.filter(plateau_id=plateau_id)
+            equipments = equipments.filter(plateaux=plateau_id)
         if role:
             equipments = equipments.filter(role=role)
         if q:
             equipments = equipments.filter(name__icontains=q)
-        equipments = list(equipments.order_by('site__name', 'plateau__name', 'name'))
+        equipments = list(equipments.order_by('site__name', 'name'))
         # tri par rôle (ordre du ChoiceSet : DM d'abord), puis par nom
         role_rank = {choice[0]: i for i, choice in enumerate(EquipmentRoleChoices.CHOICES)}
         role_label = {choice[0]: choice[1] for choice in EquipmentRoleChoices.CHOICES}
@@ -295,15 +296,24 @@ class BiomedCartoView(PermissionRequiredMixin, View):
 
         groups = OrderedDict()
         for e in equipments:
-            groups.setdefault(e.plateau, []).append(e)
+            plateaux = list(e.plateaux.all())
+            if plateau_id:
+                plateaux = [p for p in plateaux if str(p.pk) == plateau_id]
+            if plateaux:
+                for p in plateaux:
+                    groups.setdefault(p, []).append(e)
+            else:
+                groups.setdefault(None, []).append(e)
 
         def chip(e):
             name = e.name
+            plateau_count = len(e.plateaux.all())
             return {
                 'pk': e.pk,
                 'label': name,
                 'display': name if len(name) <= 32 else name[:31] + '…',
                 'color': ROLE_HEX.get(e.role, '#9e9e9e'),
+                'shared': plateau_count if plateau_count > 1 else 0,
                 'dots': [
                     {'color': family_color(f),
                      'label': str(FAMILY_LABEL.get(f, f))}
@@ -320,6 +330,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
                                 kv[0].name.lower() if kv[0] else '')):
             dm_count = sum(1 for e in members
                            if e.role == EquipmentRoleChoices.MEDICAL_DEVICE)
+            shared_count = sum(1 for e in members if len(e.plateaux.all()) > 1)
             member_ids = {e.pk for e in members}
             flow_count = sum(1 for s, t, _ in flow_edges
                              if s in member_ids or t in member_ids)
@@ -346,6 +357,7 @@ class BiomedCartoView(PermissionRequiredMixin, View):
                 'category': plateau.get_category_display() if plateau and plateau.category else '',
                 'count': len(members),
                 'dm_count': dm_count,
+                'shared_count': shared_count,
                 'flow_count': flow_count,
                 'groups': groups_out,
             })
@@ -413,7 +425,8 @@ class BiomedCartoView(PermissionRequiredMixin, View):
             return name
 
         def plateau_key(equipment):
-            return equipment.plateau.name if equipment.plateau else ''
+            first = equipment.plateaux.first()
+            return first.name if first else ''
 
         # Source nodes grouped by plateau, target nodes alphabetical
         sources, targets = OrderedDict(), OrderedDict()

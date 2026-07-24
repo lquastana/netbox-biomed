@@ -5,8 +5,10 @@ from dcim.api.serializers import (
     SiteSerializer,
 )
 from ipam.api.serializers import IPAddressSerializer, VLANSerializer
+from netbox.api.fields import SerializedPKRelatedField
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_it_landscape.api.serializers import ApplicationSerializer
+from netbox_it_landscape.models import Application
 from rest_framework import serializers
 
 from ..models import Equipment, EquipmentFlow, Plateau
@@ -32,13 +34,26 @@ class EquipmentSerializer(NetBoxModelSerializer):
         view_name='plugins-api:netbox_biomed-api:equipment-detail',
     )
     site = SiteSerializer(nested=True)
-    plateau = PlateauSerializer(nested=True, required=False, allow_null=True)
+    # M2M modifiables par identifiants (un nested serializer seul est read-only)
+    plateaux = SerializedPKRelatedField(
+        queryset=Plateau.objects.all(),
+        serializer=PlateauSerializer,
+        nested=True,
+        required=False,
+        many=True,
+    )
     location = LocationSerializer(nested=True, required=False, allow_null=True)
     manufacturer = ManufacturerSerializer(nested=True, required=False, allow_null=True)
     primary_ip = IPAddressSerializer(nested=True, required=False, allow_null=True)
     vlan = VLANSerializer(nested=True, required=False, allow_null=True)
     dcim_device = DeviceSerializer(nested=True, required=False, allow_null=True)
-    applications = ApplicationSerializer(nested=True, many=True, required=False)
+    applications = SerializedPKRelatedField(
+        queryset=Application.objects.all(),
+        serializer=ApplicationSerializer,
+        nested=True,
+        required=False,
+        many=True,
+    )
     os_obsolete = serializers.BooleanField(read_only=True)
 
     class Meta:
@@ -46,7 +61,7 @@ class EquipmentSerializer(NetBoxModelSerializer):
         fields = (
             'id', 'url', 'display', 'name', 'role', 'description',
             'category', 'device_class', 'criticality', 'status',
-            'site', 'plateau', 'location', 'care_unit',
+            'site', 'plateaux', 'location', 'care_unit',
             'manufacturer', 'model', 'serial', 'gmao_id', 'mercator_id',
             'commissioning_date',
             'primary_ip', 'mac_address', 'hostname', 'ae_title',

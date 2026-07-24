@@ -13,9 +13,9 @@ class PlateauViewSet(NetBoxModelViewSet):
 
 class EquipmentViewSet(NetBoxModelViewSet):
     queryset = Equipment.objects.select_related(
-        'site', 'plateau', 'location', 'manufacturer',
+        'site', 'location', 'manufacturer',
         'primary_ip', 'vlan', 'dcim_device',
-    ).prefetch_related('applications', 'tags')
+    ).prefetch_related('plateaux', 'applications', 'tags')
     serializer_class = serializers.EquipmentSerializer
     filterset_class = filtersets.EquipmentFilterSet
 

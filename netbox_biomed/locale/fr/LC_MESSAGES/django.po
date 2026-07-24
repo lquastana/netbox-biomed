@@ -701,3 +701,16 @@ msgstr "Vue flux"
 
 msgid "Platform view"
 msgstr "Vue plateaux"
+
+# ── Multi-plateaux (v0.6.0) ────────────────────────────────────────────────
+msgid "Technical platforms this equipment belongs to (an equipment can serve several)"
+msgstr "Plateaux techniques auxquels l'équipement est rattaché (un équipement peut en servir plusieurs)"
+
+msgid "Served establishments"
+msgstr "Établissements desservis"
+
+msgid "Multi-site"
+msgstr "Multi-établissement"
+
+msgid "shared"
+msgstr "partagés"

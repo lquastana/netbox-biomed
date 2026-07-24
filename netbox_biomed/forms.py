@@ -63,11 +63,10 @@ class EquipmentForm(NetBoxModelForm):
         queryset=Site.objects.all(),
         label=_('Establishment'),
     )
-    plateau = DynamicModelChoiceField(
+    plateaux = DynamicModelMultipleChoiceField(
         queryset=Plateau.objects.all(),
         required=False,
-        label=_('Technical platform'),
-        query_params={'site_id': '$site'},
+        label=_('Technical platforms'),
     )
     location = DynamicModelChoiceField(
         queryset=Location.objects.all(),
@@ -111,7 +110,7 @@ class EquipmentForm(NetBoxModelForm):
             name=_('Classification'),
         ),
         FieldSet(
-            'site', 'plateau', 'location', 'care_unit',
+            'site', 'plateaux', 'location', 'care_unit',
             name=_('Attachment'),
         ),
         FieldSet(
@@ -140,7 +139,7 @@ class EquipmentForm(NetBoxModelForm):
         fields = (
             'name', 'role', 'status', 'description',
             'category', 'device_class', 'criticality',
-            'site', 'plateau', 'location', 'care_unit',
+            'site', 'plateaux', 'location', 'care_unit',
             'manufacturer', 'model', 'serial', 'gmao_id', 'commissioning_date',
             'primary_ip', 'mac_address', 'hostname', 'ae_title', 'listen_ports',
             'vlan', 'connection_mode', 'ssid', 'dcim_device',

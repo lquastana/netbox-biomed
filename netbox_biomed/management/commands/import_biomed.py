@@ -159,7 +159,6 @@ class Command(BaseCommand):
                 'description': row.get('description', '')[:500],
                 'category': row.get('category', ''),
                 'site': site,
-                'plateau': plateau,
                 'gmao_id': row.get('gmao_id', ''),
                 'mercator_id': row.get('mercator_id', ''),
                 'mac_address': row.get('mac_address', '')[:50],
@@ -183,7 +182,9 @@ class Command(BaseCommand):
                 fields['primary_ip'] = primary_ip
 
             if obj is None:
-                Equipment.objects.create(name=row['name'], **fields)
+                obj = Equipment.objects.create(name=row['name'], **fields)
+                if plateau is not None:
+                    obj.plateaux.add(plateau)
                 self.created['equipment'] += 1
             else:
                 changed = False
@@ -193,6 +194,9 @@ class Command(BaseCommand):
                     if getattr(obj, attr) != value:
                         setattr(obj, attr, value)
                         changed = True
+                if plateau is not None and not obj.plateaux.filter(pk=plateau.pk).exists():
+                    obj.plateaux.add(plateau)
+                    changed = True
                 if changed:
                     obj.save()
                     self.updated['equipment'] += 1

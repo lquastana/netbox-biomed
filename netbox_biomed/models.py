@@ -103,12 +103,12 @@ class Equipment(NetBoxModel):
         related_name='biomed_equipments',
         verbose_name=_('Establishment'),
     )
-    plateau = models.ForeignKey(
+    plateaux = models.ManyToManyField(
         to=Plateau,
-        on_delete=models.SET_NULL,
         related_name='equipments',
-        null=True, blank=True,
-        verbose_name=_('Technical platform'),
+        blank=True,
+        verbose_name=_('Technical platforms'),
+        help_text=_('Technical platforms this equipment belongs to (an equipment can serve several)'),
     )
     location = models.ForeignKey(
         to='dcim.Location',
@@ -222,7 +222,7 @@ class Equipment(NetBoxModel):
     comments = models.TextField(_('Comments'), blank=True)
 
     clone_fields = (
-        'role', 'category', 'criticality', 'status', 'site', 'plateau',
+        'role', 'category', 'criticality', 'status', 'site',
         'manufacturer', 'connection_mode', 'edr',
     )
 
@@ -258,6 +258,25 @@ class Equipment(NetBoxModel):
     @property
     def is_medical_device(self):
         return self.role == EquipmentRoleChoices.MEDICAL_DEVICE
+
+    @property
+    def site_list(self):
+        """Établissements desservis : site de rattachement + sites des
+        plateaux (le multi-établissement est dérivé, jamais saisi)."""
+        sites = [self.site]
+        for plateau in self.plateaux.all():
+            if plateau.site not in sites:
+                sites.append(plateau.site)
+        return sites
+
+    @property
+    def is_multi_site(self):
+        return len(self.site_list) > 1
+
+    @property
+    def is_shared(self):
+        """Partagé entre plusieurs plateaux techniques."""
+        return self.plateaux.count() > 1
 
     @property
     def os_obsolete(self):

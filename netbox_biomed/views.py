@@ -29,7 +29,7 @@ class PlateauView(generic.ObjectView):
             'site', 'manufacturer', 'primary_ip',
         )
         return {
-            'equipment_table': tables.EquipmentTable(equipments, exclude=('plateau',)),
+            'equipment_table': tables.EquipmentTable(equipments, exclude=('plateaux',)),
             'equipment_count': equipments.count(),
         }
 
@@ -55,8 +55,8 @@ class PlateauBulkDeleteView(generic.BulkDeleteView):
 
 class EquipmentListView(generic.ObjectListView):
     queryset = Equipment.objects.select_related(
-        'site', 'plateau', 'manufacturer', 'primary_ip', 'vlan',
-    )
+        'site', 'manufacturer', 'primary_ip', 'vlan',
+    ).prefetch_related('plateaux')
     table = tables.EquipmentTable
     filterset = filtersets.EquipmentFilterSet
     filterset_form = forms.EquipmentFilterForm
@@ -64,9 +64,9 @@ class EquipmentListView(generic.ObjectListView):
 
 class EquipmentView(generic.ObjectView):
     queryset = Equipment.objects.select_related(
-        'site', 'plateau', 'location', 'manufacturer',
+        'site', 'location', 'manufacturer',
         'primary_ip', 'vlan', 'dcim_device',
-    )
+    ).prefetch_related('plateaux')
 
     def get_extra_context(self, request, instance):
         flows_out = instance.flows_as_source.select_related('source', 'target')

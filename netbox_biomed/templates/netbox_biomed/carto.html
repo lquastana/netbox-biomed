@@ -145,7 +145,7 @@
           </div>
         </div>
         <div class="metrics">
-          <div>{{ card.dm_count }} {% trans "devices" %} · {{ card.count }} {% trans "equip." %}</div>
+          <div>{{ card.dm_count }} {% trans "devices" %} · {{ card.count }} {% trans "equip." %}{% if card.shared_count %} ({{ card.shared_count }} {% trans "shared" %}){% endif %}</div>
           <div>{{ card.flow_count }} {% trans "flows" %}</div>
         </div>
       </div>
@@ -163,7 +163,7 @@
           {% for chip in grp.equipments %}
             <a class="bio-chip" href="/plugins/biomed/equipements/{{ chip.pk }}/" title="{{ chip.label }}">
               <span class="dot" style="background: {{ chip.color }};"></span>
-              <span class="n">{{ chip.display }}</span>
+              <span class="n">{{ chip.display }}{% if chip.shared %} <span class="badge text-bg-purple" style="font-size:.6rem;">×{{ chip.shared }}</span>{% endif %}</span>
               <span class="dots">
                 {% for dot in chip.dots %}<i style="background: {{ dot.color }};" title="{{ dot.label }}"></i>{% endfor %}
               </span>

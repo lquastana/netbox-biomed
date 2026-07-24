@@ -25,7 +25,7 @@ class EquipmentTable(NetBoxTable):
     name = tables.Column(linkify=True, verbose_name=_('Name'))
     role = ChoiceFieldColumn(verbose_name=_('Role'))
     site = tables.Column(linkify=True, verbose_name=_('Establishment'))
-    plateau = tables.Column(linkify=True, verbose_name=_('Technical platform'))
+    plateaux = tables.ManyToManyColumn(linkify_item=True, verbose_name=_('Technical platforms'))
     manufacturer = tables.Column(linkify=True, verbose_name=_('Manufacturer'))
     primary_ip = tables.Column(linkify=True, verbose_name=_('IP'))
     vlan = tables.Column(linkify=True, verbose_name=_('VLAN'))
@@ -47,7 +47,7 @@ class EquipmentTable(NetBoxTable):
     class Meta(NetBoxTable.Meta):
         model = Equipment
         fields = (
-            'pk', 'id', 'name', 'role', 'site', 'plateau', 'category',
+            'pk', 'id', 'name', 'role', 'site', 'plateaux', 'category',
             'manufacturer', 'model', 'serial', 'gmao_id', 'status',
             'criticality', 'device_class', 'primary_ip', 'mac_address',
             'hostname', 'ae_title', 'vlan', 'connection_mode', 'ssid',
@@ -56,7 +56,7 @@ class EquipmentTable(NetBoxTable):
             'applications', 'owner', 'tags',
         )
         default_columns = (
-            'name', 'role', 'site', 'plateau', 'manufacturer',
+            'name', 'role', 'site', 'plateaux', 'manufacturer',
             'primary_ip', 'ae_title', 'status', 'network_exposure',
         )
 

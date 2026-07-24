@@ -45,7 +45,7 @@ class EquipmentFilterSet(NetBoxModelFilterSet):
         label=_('Establishment (ID)'),
     )
     plateau_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='plateau',
+        field_name='plateaux',
         queryset=Plateau.objects.all(),
         label=_('Technical platform (ID)'),
     )
